@@ -24,6 +24,7 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
+
     //회원가입
     @PostMapping("/join")
     public Long join(@RequestBody Map<String, String> user) {

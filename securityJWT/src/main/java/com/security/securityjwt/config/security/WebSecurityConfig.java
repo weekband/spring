@@ -56,7 +56,7 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests() //요청에 대한 사용권한 체크
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers(ROLE_USER_REQUIRED).hasRole("USER")
                 .antMatchers("/**").permitAll().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

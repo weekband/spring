@@ -1,6 +1,8 @@
 package com.security.securityjwt.config.security;
 
 
+import com.security.securityjwt.config.exception.UserException;
+import com.security.securityjwt.config.exception.UserExceptionResult;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -77,6 +79,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e){
+            System.out.println("JwtTokenProvider.validateToken");
             return false;
         }
 

@@ -39,7 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> makeErrorResponseEntity(final String errorDescription) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(),errorDescription));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST,errorDescription));
     }
 
     @ExceptionHandler({UserException.class})
@@ -57,14 +57,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<ErrorResponse> makeErrorResponseEntity(final UserExceptionResult errorResult){
         return ResponseEntity.status(errorResult.getHttpStatus())
-                .body(new ErrorResponse(errorResult.name(),errorResult.getMessage()));
+                .body(new ErrorResponse(errorResult.getHttpStatus(),errorResult.getMessage()));
     }
 
     @Getter
     @RequiredArgsConstructor
     static class ErrorResponse {
 
-        private final String code;
+        private final HttpStatus status;
         private final String message;
     }
 }

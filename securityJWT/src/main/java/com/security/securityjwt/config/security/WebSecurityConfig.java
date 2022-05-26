@@ -40,12 +40,11 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer securityCustomizer() {
         return web -> web.ignoring().antMatchers("/resources/**", "/h2-console/**");
-
-
     }
 
     private static final RequestMatcher ROLE_USER_REQUIRED = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/v1/user/{email}/search")
+
 
     );
 

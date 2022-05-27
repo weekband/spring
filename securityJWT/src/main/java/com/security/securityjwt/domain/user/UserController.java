@@ -7,6 +7,8 @@ import com.security.securityjwt.config.exception.UserException;
 import com.security.securityjwt.config.exception.UserExceptionResult;
 import com.security.securityjwt.config.security.JwtTokenDTO;
 import com.security.securityjwt.config.security.JwtTokenProvider;
+import com.security.securityjwt.domain.token.Token;
+import com.security.securityjwt.domain.token.TokenRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Request;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -33,6 +36,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
 
     //회원가입
@@ -55,12 +59,31 @@ public class UserController {
         if (!passwordEncoder.matches(user.get("password"),member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
         }
+        String refrash = jwtTokenProvider.issueToken(member.getUsername(), member.getRoles(), "refrash");
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(JwtTokenDTO.builder()
-                .accessToken(jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles()))
-                .refreshToken(jwtTokenProvider.createRefreshToken(member.getUsername(), member.getRoles()))
+                .accessToken(jwtTokenProvider.issueToken(member.getUsername(),member.getRoles(),"access"))
+                .refreshToken(tokenRepository.save(Token.builder().refrashToken(refrash).build()).getRefrashToken())
                 .build());
+    }
+
+    @PostMapping("/reissuance")
+    public ResponseEntity tokenReissuance (@RequestHeader Map<String ,String> header) {
+        String token = header.get("X-REFRASH-TOKEN");
+        if (jwtTokenProvider.validateRefrashToken(token)){
+            User member = userRepository.findByEmail(jwtTokenProvider.getUserPk(token))
+                    .orElseThrow(()->new UserException(UserExceptionResult.EMAIL_NOT_FOUND));
+
+            return ResponseEntity.ok().body(JwtTokenDTO.builder()
+                            .accessToken(jwtTokenProvider.issueToken(member.getUsername(),member.getRoles(),"access"))
+                            .refreshToken(tokenRepository.save(Token.builder().refrashToken(token).build()).getRefrashToken())
+                    .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserExceptionResult.REFRASH_TOKEN_INVALID_VERIFICATION);
+        }
+
+
     }
 
     @GetMapping("/{email}/search")
@@ -72,16 +95,16 @@ public class UserController {
         return findEmail.getEmail();
     }
 
-    @GetMapping("/tokenInfo")
+   /* @GetMapping("/tokenInfo")
     public ResponseEntity<String> myTokenInfo(HttpServletRequest request) {
         String header = request.getHeader("X-ACCESS-TOKEN");
         ObjectMapper mapper = new ObjectMapper();
 
-        Claims jwtTokenProviderUserPk = jwtTokenProvider.getTokenInfo(header);
+        //Claims jwtTokenProviderUserPk = jwtTokenProvider.getTokenInfo(header);
 
 
         return ResponseEntity.ok(jwtTokenProviderUserPk.toString());
     }
-
+*/
 
 }

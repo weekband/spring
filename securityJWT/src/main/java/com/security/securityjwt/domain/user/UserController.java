@@ -69,15 +69,20 @@ public class UserController {
     }
 
     @PostMapping("/reissuance")
-    public ResponseEntity tokenReissuance (@RequestHeader Map<String ,String> header) {
-        String token = header.get("X-REFRASH-TOKEN");
+    public ResponseEntity tokenReissuance (HttpServletRequest request) {
+        String token = request.getHeader("X-REFRASH-TOKEN");
+        System.out.println("tokenReissuance = " + token);
         if (jwtTokenProvider.validateRefrashToken(token)){
             User member = userRepository.findByEmail(jwtTokenProvider.getUserPk(token))
                     .orElseThrow(()->new UserException(UserExceptionResult.EMAIL_NOT_FOUND));
 
+            Token findRefrashToken = tokenRepository.findByRefrashToken(token);
+            String refrash = jwtTokenProvider.issueToken(member.getUsername(), member.getRoles(), "refrash");
+            findRefrashToken.setRefrashToken(refrash);
+
             return ResponseEntity.ok().body(JwtTokenDTO.builder()
                             .accessToken(jwtTokenProvider.issueToken(member.getUsername(),member.getRoles(),"access"))
-                            .refreshToken(tokenRepository.save(Token.builder().refrashToken(token).build()).getRefrashToken())
+                            .refreshToken(refrash)
                     .build());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserExceptionResult.REFRASH_TOKEN_INVALID_VERIFICATION);

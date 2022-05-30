@@ -9,6 +9,7 @@ import com.security.securityjwt.config.security.JwtTokenDTO;
 import com.security.securityjwt.config.security.JwtTokenProvider;
 import com.security.securityjwt.domain.token.Token;
 import com.security.securityjwt.domain.token.TokenRepository;
+import com.security.securityjwt.domain.token.TokenService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Request;
@@ -37,6 +38,8 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+
+    private final TokenService tokenService;
 
 
     //회원가입
@@ -75,14 +78,13 @@ public class UserController {
         if (jwtTokenProvider.validateRefrashToken(token)){
             User member = userRepository.findByEmail(jwtTokenProvider.getUserPk(token))
                     .orElseThrow(()->new UserException(UserExceptionResult.EMAIL_NOT_FOUND));
+            System.out.println("member : " + member);
+            String reflashToken = tokenService.tokenUpdate(token, member);
 
-            Token findRefrashToken = tokenRepository.findByRefrashToken(token);
-            String refrash = jwtTokenProvider.issueToken(member.getUsername(), member.getRoles(), "refrash");
-            findRefrashToken.setRefrashToken(refrash);
 
             return ResponseEntity.ok().body(JwtTokenDTO.builder()
                             .accessToken(jwtTokenProvider.issueToken(member.getUsername(),member.getRoles(),"access"))
-                            .refreshToken(refrash)
+                            .refreshToken(reflashToken)
                     .build());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserExceptionResult.REFRASH_TOKEN_INVALID_VERIFICATION);

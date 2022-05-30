@@ -1,8 +1,13 @@
 package com.security.securityjwt.domain.token;
 
+import com.security.securityjwt.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
+@Repository
 public interface TokenRepository extends JpaRepository<Token,Long> {
 
-    Token findByRefrashToken(String token);
+    Optional<Token> findByRefrashToken(String token);
 }

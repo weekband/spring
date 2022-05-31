@@ -95,8 +95,6 @@ public class UserController {
 
     @GetMapping("/{email}/search")
     public String searchEmail(@PathVariable("email") String email) {
-
-
         User findEmail = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("찾으시는 이메일이 없습니다."));
 
         return findEmail.getEmail();

@@ -8,7 +8,7 @@
 <h1>기본 테이블</h1>
 <table border="1">
   <tr>
-    <th>username</th>
+    <th>usernae</th>
     <th>age</th>
   </tr>
   <tr th:each="user : ${users}">
@@ -24,7 +24,7 @@
     <th>age</th>
     <th>etc</th>
   </tr>
-  <tr th:each="user, userStat : ${users}">
+  <tr th:each="user : ${users}">
     <td th:text="${userStat.count}">username</td>
     <td th:text="${user.username}">username</td>
     <td th:text="${user.age}">0</td>

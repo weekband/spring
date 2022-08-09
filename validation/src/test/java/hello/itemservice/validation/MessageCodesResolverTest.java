@@ -22,7 +22,7 @@ public class MessageCodesResolverTest {
         String[] messageCodes = codesResolver.resolveMessageCodes("required", "item", "itemName", String.class);
         assertThat(messageCodes).containsExactly(
                 "required.item.itemName",
-                "required.item",
+                "required.itemName",
                 "required.java.lang.String",
                 "required"
         );

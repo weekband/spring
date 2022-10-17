@@ -4,17 +4,20 @@ import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @Slf4j
+@Controller
 @RequestMapping("/validation/v2/items")
 @RequiredArgsConstructor
 public class ValidationItemControllerV2 {
@@ -25,7 +28,7 @@ public class ValidationItemControllerV2 {
     public String items(Model model) {
         List<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
-        return "validation/v1/items";
+        return "validation/v2/items";
     }
 
     @GetMapping("/{itemId}")
@@ -112,7 +115,7 @@ public class ValidationItemControllerV2 {
         return "redirect:/validation/v2/items/{itemId}";
     }
 
-    @PostMapping("/add")
+    //@PostMapping("/add")
     public String addItemV3(@ModelAttribute Item item,BindingResult bindingResult,RedirectAttributes redirectAttributes) {
         if(!StringUtils.hasText(item.getItemName())) {
             bindingResult.addError(new FieldError("item","itemName",item.getItemName(),false,new String[]{"required.item.itemName"},null,null));
@@ -152,9 +155,13 @@ public class ValidationItemControllerV2 {
         log.info("objectName={}",bindingResult.getObjectName());
         log.info("target={}",bindingResult.getTarget());
 
-        if (!StringUtils.hasText(item.getItemName())) {
-            bindingResult.rejectValue("itemName","required");
-        }
+
+        //공백이나
+        ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult,"itemName","required");
+
+
+
+
 
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             bindingResult.rejectValue("price","range",new Object[]{1000,1000000},null);

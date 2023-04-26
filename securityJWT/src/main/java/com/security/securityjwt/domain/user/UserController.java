@@ -1,8 +1,6 @@
 package com.security.securityjwt.domain.user;
 
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.security.securityjwt.config.exception.UserException;
 import com.security.securityjwt.config.exception.UserExceptionResult;
 import com.security.securityjwt.config.security.JwtTokenDTO;
@@ -10,24 +8,16 @@ import com.security.securityjwt.config.security.JwtTokenProvider;
 import com.security.securityjwt.domain.token.Token;
 import com.security.securityjwt.domain.token.TokenRepository;
 import com.security.securityjwt.domain.token.TokenService;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Request;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -75,7 +65,7 @@ public class UserController {
     public ResponseEntity tokenReissuance (HttpServletRequest request) {
         String token = request.getHeader("X-REFRASH-TOKEN");
         System.out.println("tokenReissuance = " + token);
-        if (jwtTokenProvider.validateRefrashToken(token)){
+        if (jwtTokenProvider.validateRefreshToken(token)){
             User member = userRepository.findByEmail(jwtTokenProvider.getUserPk(token))
                     .orElseThrow(()->new UserException(UserExceptionResult.EMAIL_NOT_FOUND));
             System.out.println("member : " + member);

@@ -1,9 +1,6 @@
 package com.security.securityjwt.config.security;
 
 
-import com.security.securityjwt.config.exception.UserException;
-import com.security.securityjwt.config.exception.UserExceptionResult;
-import com.security.securityjwt.domain.token.Token;
 import com.security.securityjwt.domain.token.TokenRepository;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.management.relation.Role;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -95,7 +91,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public boolean validateRefrashToken(String jwtToken){
+    public boolean validateRefreshToken(String jwtToken){
         try {
 
             Jws<Claims> claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(jwtToken);

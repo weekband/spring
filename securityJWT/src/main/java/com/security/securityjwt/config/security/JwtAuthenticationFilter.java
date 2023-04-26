@@ -3,6 +3,7 @@ package com.security.securityjwt.config.security;
 import com.security.securityjwt.config.exception.UserException;
 import com.security.securityjwt.config.exception.UserExceptionResult;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

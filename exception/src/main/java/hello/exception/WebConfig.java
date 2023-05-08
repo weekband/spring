@@ -42,7 +42,6 @@ public class WebConfig implements WebMvcConfigurer {
         filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST,DispatcherType.ERROR);
         return filterRegistrationBean;
 
-
     }
 
 }

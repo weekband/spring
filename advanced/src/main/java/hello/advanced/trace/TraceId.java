@@ -13,8 +13,8 @@ public class TraceId {
     }
 
     public TraceId(String id,int level) {
-        this.id = createId();
-        this.level = 0;
+        this.id = id;
+        this.level = level;
     }
 
     private String createId() {
